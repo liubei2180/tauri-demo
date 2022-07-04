@@ -1,5 +1,6 @@
-import {Component} from '@angular/core';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { Component } from '@angular/core';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
 
 @Component({
     selector: 'app-root',
@@ -23,4 +24,16 @@ export class AppComponent {
             );
         }
     }
+
+    async notifyMe() {
+        let permissionGranted = await isPermissionGranted(); // 检查是否授予发送通知的权限
+        if (!permissionGranted) {
+            const permission = await requestPermission();
+            permissionGranted = permission === 'granted'; // 若检查时未授予，授予发通知的权限
+        }
+        if (permissionGranted) {
+            sendNotification({ title: 'TAURI', body: 'Tauri is awesome!' }); // 发送toast通知
+        }
+    }
+
 }
